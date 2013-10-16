@@ -83,24 +83,13 @@ grails.project.dependency.resolution = {
                 'org.codenarc:CodeNarc:0.19',
 
                 // This fixes ivy resolution issues we had with our transitive dependency on 1.4.
-                'commons-codec:commons-codec:1.5',
+                'commons-codec:commons-codec:1.5'
 
-                // Call Perforce in process. Delete when user data no longer come from Perforce at deployment time.
-                'com.perforce:p4java:2010.1.269249',
-
-                // Groovy concurrency framework.
-                'org.codehaus.gpars:gpars:1.0.0',
-
-                // Used for JSON parsing of AWS Simple Workflow Service metadata.
-                // Previously this was an indirect depencency through Grails itself, but this caused errors in some
-                // Grails environments.
-                'com.googlecode.json-simple:json-simple:1.1'
         ) { // Exclude superfluous and dangerous transitive dependencies
             excludes(
                     // Some libraries bring older versions of JUnit as a transitive dependency and that can interfere
                     // with Grails' built in JUnit
                     'junit',
-
                     'mockito-core',
             )
         }
