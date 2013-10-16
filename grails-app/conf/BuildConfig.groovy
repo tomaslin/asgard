@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.apache.ivy.plugins.resolver.FileSystemResolver
-import org.apache.ivy.plugins.resolver.URLResolver
 
 grails.project.work.dir = 'work'
 grails.project.class.dir = 'target/classes'
@@ -26,29 +24,12 @@ grails.servlet.version = "3.0"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
-codenarc {
-    reports = {
-        AsgardXmlReport('xml') {
-            outputFile = 'CodeNarc-Report.xml'
-            title = 'Asgard CodeNarc Report'
-        }
-        AsgardHtmlReport('html') {
-            outputFile = 'CodeNarc-Report.html'
-            title = 'Asgard CodeNarc Report'
-        }
-    }
-    ruleSetFiles='file:grails-app/conf/CodeNarcRuleSet.groovy'
-    maxPriority1Violations = 0
-    maxPriority2Violations = 0
-    maxPriority3Violations = 0
-}
-
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
     //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
 
     // configure settings for the test-app JVM, uses the daemon by default
-    // test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+    test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
     // configure settings for the run-app JVM
     run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
     // configure settings for the run-war JVM
@@ -72,32 +53,6 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
         mavenCentral()
-
-        // Optional custom repository for dependencies.
-        Closure internalRepo = {
-            String repoUrl = 'http://artifacts/ext-releases-local'
-            String artifactPattern = '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
-            String ivyPattern = '[organisation]/[module]/[revision]/[module]-[revision]-ivy.[ext]'
-            URLResolver urlLibResolver = new URLResolver()
-            urlLibResolver.with {
-                name = repoUrl
-                addArtifactPattern("${repoUrl}/${artifactPattern}")
-                addIvyPattern("${repoUrl}/${ivyPattern}")
-                m2compatible = true
-            }
-            resolver urlLibResolver
-
-            String localDir = System.getenv('IVY_LOCAL_REPO') ?: "${System.getProperty('user.home')}/ivy2-local"
-            FileSystemResolver localLibResolver = new FileSystemResolver()
-            localLibResolver.with {
-                name = localDir
-                addArtifactPattern("${localDir}/${artifactPattern}")
-                addIvyPattern("${localDir}/${ivyPattern}")
-            }
-            resolver localLibResolver
-        }
-        // Comment or uncomment the next line to toggle the use of an internal artifacts repository.
-        //internalRepo()
     }
 
     dependencies {
@@ -185,8 +140,6 @@ grails.project.dependency.resolution = {
 
         runtime ":hibernate:3.6.10.1" // or ":hibernate4:4.1.11.1"
         runtime ":cors:1.0.4"
-
-        test ':code-coverage:1.2.6'
 
         build ":tomcat:7.0.42"
     }
