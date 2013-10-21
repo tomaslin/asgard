@@ -19,52 +19,75 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class TimeTests extends GroovyTestCase {
+class TimeSpec extends Specification {
 
-    void testParseZulu() {
+    void 'parse zulu'() {
+        given:
         DateTime parsedDateTime = Time.parse('2010-11-08T21:50:33Z')
-        assert 2010 == parsedDateTime.year
-        assert 11 == parsedDateTime.monthOfYear
-        assert 8 == parsedDateTime.dayOfMonth
+
+        expect:
+        with(parsedDateTime) {
+            year == 2010
+            monthOfYear == 11
+            dayOfMonth == 8
+        }
     }
 
-    void testParseReadable() {
+    void 'parse readable'() {
+        given:
         DateTime parsedDateTime = Time.parse('2011-04-20 16:18:20 HAST').withZone(DateTimeZone.forID('US/Hawaii'))
-        assert 2011 == parsedDateTime.year
-        assert 4 == parsedDateTime.monthOfYear
-        assert 20 == parsedDateTime.dayOfMonth
+
+        expect:
+        with(parsedDateTime) {
+            year == 2011
+            monthOfYear == 4
+            dayOfMonth == 20
+        }
     }
 
-    void testParseInvalid() {
-        assertNull Time.parse('2011-04-20 16:18:20')
-        assertNull Time.parse('')
-        assertNull Time.parse(null)
+    @Unroll
+    void 'parse invalid'() {
+        expect:
+        Time.parse(time) == null
+
+        where:
+        time                  | _
+        '2011-04-20 16:18:20' | _
+        ''                    | _
+        null                  | _
     }
 
-    void testNowUtc() {
+    void 'now utc'() {
 
-        // 2011-08-21T16:38:05.087-07:00
+        when: '2011-08-21T16:38:05.087-07:00'
         DateTimeZone pacificTime = DateTimeZone.forID('America/Los_Angeles')
         String nowString = new DateTime(pacificTime).toString()
-        assert nowString.startsWith('201') // Good for 8 years
-        assert nowString.endsWith(':00')
-        assert nowString[10] == 'T'
 
-        // 2011-08-21T23:38:05.203Z
+        then:
+        nowString.startsWith('201') // Good for 8 years
+        nowString.endsWith(':00')
+        nowString[10] == 'T'
+
+        when: '2011-08-21T23:38:05.203Z'
         String nowUtcString = Time.nowUtc().toString()
-        assert nowUtcString.startsWith('201')
-        assert nowUtcString.endsWith('Z')
-        assert nowUtcString[10] == 'T'
 
-        // Hour should be different between time zones
-        assert nowString[11..12] != nowUtcString[11..12]
+        then:
+        nowUtcString.startsWith('201')
+        nowUtcString.endsWith('Z')
+        nowUtcString[10] == 'T'
 
+        and: 'Hour should be different between time zones'
+        nowString[11..12] != nowUtcString[11..12]
+
+        when:
         DateTimeFormatter parser = ISODateTimeFormat.dateTime()
         DateTime nowUtcBackToLocal = parser.parseDateTime(nowUtcString).toDateTime(pacificTime)
         String nowUtcBackToLocalString = nowUtcBackToLocal.toString()
 
-        // Year, month, day, hour should be equal between the local date string and the utc date converted back to local
-        assert nowUtcBackToLocalString[0..13] == nowString[0..13]
+        then: 'Year, month, day, hour should be equal between the local date string and the utc date converted back to local'
+        nowUtcBackToLocalString[0..13] == nowString[0..13]
     }
 }

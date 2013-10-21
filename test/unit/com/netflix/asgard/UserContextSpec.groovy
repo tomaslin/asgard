@@ -16,23 +16,36 @@
 package com.netflix.asgard
 
 import com.netflix.asgard.mock.Mocks
+import spock.lang.Specification
 
-class UserContextTests extends GroovyTestCase {
+class UserContextSpec extends Specification {
 
     void testWithRegion() {
+
+        when:
         UserContext userContext = Mocks.userContext()
-        assert Region.US_EAST_1 == userContext.region
-        assert 'localhost' == userContext.clientHostName
-        assert 'localhost' == userContext.clientIpAddress
-        assert null == userContext.ticket
 
+        then:
+        with(userContext) {
+            region == Region.US_EAST_1
+            clientHostName == 'localhost'
+            clientIpAddress == 'localhost'
+            ticket == null
+        }
+
+        when:
         UserContext singaporeContext = userContext.withRegion(Region.AP_SOUTHEAST_1)
-        assert Region.AP_SOUTHEAST_1 == singaporeContext.region
-        assert 'localhost' == singaporeContext.clientHostName
-        assert 'localhost' == singaporeContext.clientIpAddress
-        assert null == singaporeContext.ticket
 
-        // Original is unchanged
-        assert Region.US_EAST_1 == userContext.region
+        then:
+        with(singaporeContext) {
+            region == Region.AP_SOUTHEAST_1
+            clientHostName == 'localhost'
+            clientIpAddress == 'localhost'
+            ticket == null
+        }
+
+        and: 'Original is unchanged'
+        Region.US_EAST_1 == userContext.region
+
     }
 }

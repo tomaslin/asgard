@@ -15,37 +15,50 @@
  */
 package com.netflix.asgard
 
-import javax.servlet.http.HttpServletRequest
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import spock.lang.Specification
 
-class RequestsTests extends GroovyTestCase {
+import javax.servlet.http.HttpServletRequest
 
-    void testEnsureListUsesParamList() {
+class RequestsSpec extends Specification {
+
+    void 'ensureList uses param list'() {
+        given:
         List<String> expected = ["us-east-1c", "us-east-1d"]
         List<String> param = ["us-east-1c", "us-east-1d"]
-        assert expected == Requests.ensureList(param)
+        expect:
+        expected == Requests.ensureList(param)
     }
 
-    void testEnsureListCreatesListFromString() {
+    void 'ensureList creates list from string'() {
+        given:
         List<String> expected = ["us-east-1c"]
         String param = "us-east-1c"
-        assert expected == Requests.ensureList(param)
+
+        expect:
+        expected == Requests.ensureList(param)
     }
 
-    void testEnsureListCreatesListFromStringArray() {
+    void 'ensureList creates list from String array'() {
+        given:
         List<String> expected = ["us-east-1c"]
         String[] param = (String[]) ["us-east-1c"]
-        assert expected == Requests.ensureList(param)
+
+        expect:
+        expected == Requests.ensureList(param)
     }
 
-    void testCapParameterMap() {
+    void 'cap parameter map'() {
+        given:
         Map<String, String> parameters = ['name': 'Gandalf', 'pi': PI]
         HttpServletRequest request = new GrailsMockHttpServletRequest()
         GrailsParameterMap mapWithLongValue = new GrailsParameterMap(parameters, request)
         GrailsParameterMap mapWithoutLongValue = Requests.cap(mapWithLongValue)
-        assert 'Gandalf' == mapWithoutLongValue.name
-        assertNull mapWithoutLongValue.pi
+
+        expect:
+        'Gandalf' == mapWithoutLongValue.name
+        null == mapWithoutLongValue.pi
     }
 
     static final String PI =

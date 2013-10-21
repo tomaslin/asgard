@@ -15,10 +15,12 @@
  */
 package com.netflix.asgard.format
 
-class JsonpStripperTests extends GroovyTestCase {
+import spock.lang.Specification
+
+class JsonpStripperSpec extends Specification {
 
     void testStripPadding() {
-
+        given:
         String expected = '''{"vers": 0.01,"config": {"rate": "perhr","valueColumns": ["linux", "mswin"],"currencies": ["USD"],"regions": [{
                 "region": "us-east",
                 "footnotes": {
@@ -41,7 +43,10 @@ class JsonpStripperTests extends GroovyTestCase {
 
 '''
 
+        when:
         String result = new JsonpStripper(text).stripPadding()
-        assert expected == result
+
+        then:
+        expected == result
     }
 }

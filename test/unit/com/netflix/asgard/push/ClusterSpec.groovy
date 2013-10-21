@@ -19,37 +19,44 @@ import com.amazonaws.services.autoscaling.model.AutoScalingGroup
 import com.amazonaws.services.autoscaling.model.Instance
 import com.netflix.asgard.mock.Mocks
 import com.netflix.asgard.model.AutoScalingGroupData
+import spock.lang.Specification
 
-class ClusterTests extends GroovyTestCase {
+class ClusterSpec extends Specification {
 
-    void setUp() {
+    void setup() {
         Mocks.createDynamicMethods()
         Mocks.awsAutoScalingService()
     }
 
-    void testNewCluster() {
+    void 'new cluster'() {
+        given:
         AutoScalingGroupData groupOrig = makeGroupData('helloworld-example')
         AutoScalingGroupData groupv000 = makeGroupData('helloworld-example-v000')
         AutoScalingGroupData groupv001 = makeGroupData('helloworld-example-v001')
         AutoScalingGroupData groupv002 = makeGroupData('helloworld-example-v002')
         Cluster cluster = new Cluster([groupv000, groupv002, groupOrig, groupv001])
 
-        assert groupOrig.autoScalingGroupName == cluster[0].autoScalingGroupName
-        assert groupv000.autoScalingGroupName == cluster[1].autoScalingGroupName
-        assert groupv001.autoScalingGroupName == cluster[2].autoScalingGroupName
-        assert groupv002.autoScalingGroupName == cluster[3].autoScalingGroupName
+        expect:
+        groupOrig.autoScalingGroupName == cluster[0].autoScalingGroupName
+        groupv000.autoScalingGroupName == cluster[1].autoScalingGroupName
+        groupv001.autoScalingGroupName == cluster[2].autoScalingGroupName
+        groupv002.autoScalingGroupName == cluster[3].autoScalingGroupName
     }
 
-    void testLast() {
+    void 'last'() {
+        given:
         AutoScalingGroupData groupOrig = makeGroupData('helloworld-example')
         AutoScalingGroupData groupv000 = makeGroupData('helloworld-example-v000')
         AutoScalingGroupData groupv001 = makeGroupData('helloworld-example-v001')
         AutoScalingGroupData groupv002 = makeGroupData('helloworld-example-v002')
         Cluster cluster = new Cluster([groupv000, groupv002, groupOrig, groupv001])
-        assert groupv002.autoScalingGroupName == cluster.last().autoScalingGroupName
+
+        expect:
+        groupv002.autoScalingGroupName == cluster.last().autoScalingGroupName
     }
 
-    void testGetInstances() {
+    void 'get instances'() {
+        given:
         Instance deadbeef = new Instance().withInstanceId('i-deadbeef')
         Instance aaaa4444 = new Instance().withInstanceId('i-aaaa4444')
         Instance eeee9999 = new Instance().withInstanceId('i-eeee9999')
@@ -59,10 +66,13 @@ class ClusterTests extends GroovyTestCase {
         AutoScalingGroupData groupv001 = makeGroupData('helloworld-example-v001', [eeee9999])
         AutoScalingGroupData groupv002 = makeGroupData('helloworld-example-v002')
         Cluster cluster = new Cluster([groupv000, groupv002, groupOrig, groupv001])
-        assert [deadbeef, aaaa4444, eeee9999].collect { it.instanceId } == cluster.instances.collect { it.instanceId }
+
+        expect:
+        [deadbeef, aaaa4444, eeee9999].collect { it.instanceId } == cluster.instances.collect { it.instanceId }
     }
 
-    void testGetInstanceIds() {
+    void 'instance ids'() {
+        given:
         Instance ideadbeef = new Instance().withInstanceId('i-deadbeef')
         Instance iaaaa4444 = new Instance().withInstanceId('i-aaaa4444')
         Instance ieeee9999 = new Instance().withInstanceId('i-eeee9999')
@@ -72,7 +82,9 @@ class ClusterTests extends GroovyTestCase {
         AutoScalingGroupData groupv001 = makeGroupData('helloworld-example-v001', [ieeee9999])
         AutoScalingGroupData groupv002 = makeGroupData('helloworld-example-v002')
         Cluster cluster = new Cluster([groupv000, groupv002, groupOrig, groupv001])
-        assert ['i-deadbeef', 'i-aaaa4444', 'i-eeee9999'] == cluster.instances.collect { it.instanceId }
+
+        expect:
+        ['i-deadbeef', 'i-aaaa4444', 'i-eeee9999'] == cluster.instances.collect { it.instanceId }
     }
 
     private AutoScalingGroupData makeGroupData(String name, List<Instance> instances = []) {

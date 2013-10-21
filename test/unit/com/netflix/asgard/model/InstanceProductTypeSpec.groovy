@@ -15,9 +15,12 @@
  */
 package com.netflix.asgard.model
 
-class InstanceProductTypeTests extends GroovyTestCase {
+import spock.lang.Specification
 
-    void testValuesForOnDemandAndReserved() {
-        assert [InstanceProductType.LINUX_UNIX, InstanceProductType.WINDOWS] == InstanceProductType.valuesForOnDemandAndReserved()
+class InstanceProductTypeSpec extends Specification {
+
+    void 'values for on demand and reserved'() {
+        expect:
+        [InstanceProductType.LINUX_UNIX, InstanceProductType.WINDOWS] == InstanceProductType.valuesForOnDemandAndReserved()
     }
 }

@@ -15,19 +15,27 @@
  */
 package com.netflix.asgard.model
 
-class HardwareProfileTests extends GroovyTestCase {
+import spock.lang.Specification
 
-    void testCpuSummaryAndDetailWithParen() {
+class HardwareProfileSpec extends Specification {
+
+    void 'cpu summary and details with parenthesis'() {
+        given:
         String fullCpu = '33.5 EC2 Compute Units 33.5 EC2 Compute Units (2 x Intel Xeon X5570, quad-core “Nehalem” architecture)'
         HardwareProfile hardwareProfile = new HardwareProfile(cpu: fullCpu)
-        assert '33.5 EC2 Compute Units 33.5 EC2 Compute Units' == hardwareProfile.cpuSummary
-        assert '(2 x Intel Xeon X5570, quad-core “Nehalem” architecture)' == hardwareProfile.cpuDetail
+
+        expect:
+        '33.5 EC2 Compute Units 33.5 EC2 Compute Units' == hardwareProfile.cpuSummary
+        '(2 x Intel Xeon X5570, quad-core “Nehalem” architecture)' == hardwareProfile.cpuDetail
     }
 
-    void testCpuSummaryAndDetailWithoutParen() {
+    void 'cpu summary and details without parenthesis'() {
+        given:
         String fullCpu = '33.5 EC2 Compute Units 33.5 EC2 Compute Units'
         HardwareProfile hardwareProfile = new HardwareProfile(cpu: fullCpu)
-        assert '33.5 EC2 Compute Units 33.5 EC2 Compute Units' == hardwareProfile.cpuSummary
-        assertNull hardwareProfile.cpuDetail
+
+        expect:
+        '33.5 EC2 Compute Units 33.5 EC2 Compute Units' == hardwareProfile.cpuSummary
+        null == hardwareProfile.cpuDetail
     }
 }

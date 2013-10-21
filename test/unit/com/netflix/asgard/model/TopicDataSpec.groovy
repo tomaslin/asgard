@@ -15,15 +15,20 @@
  */
 package com.netflix.asgard.model
 
-class InstanceTypeDataTests extends GroovyTestCase {
+import com.netflix.asgard.Region
+import spock.lang.Specification
 
-    void testGetMonthlyLinuxOnDemandPrice() {
-        assert '$72.00' == new InstanceTypeData(linuxOnDemandPrice: 0.10).monthlyLinuxOnDemandPrice
-        assert '$274.39' == new InstanceTypeData(linuxOnDemandPrice: 0.3811).monthlyLinuxOnDemandPrice
+class TopicDataSpec extends Specification {
+
+    void 'arn to name'() {
+        expect:
+        'abadmin-testConformity-Report' ==
+        new TopicData('arn:aws:sns:us-east-1:179000000000:abadmin-testConformity-Report').name
     }
 
-    void testGetMonthlyLinuxOnDemandPriceNull() {
-        InstanceTypeData instanceType = new InstanceTypeData()
-        assertNull instanceType.monthlyLinuxOnDemandPrice
+    void 'name to arn'() {
+        expect:
+        'arn:aws:sns:us-east-1:179000000000:abadmin-testConformity-Report' ==
+        new TopicData(Region.defaultRegion(), '179000000000', 'abadmin-testConformity-Report').arn
     }
 }

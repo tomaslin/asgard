@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.netflix.asgard.model
+package com.netflix.asgard
 
-import com.netflix.asgard.Region
+import spock.lang.Specification
+import spock.lang.Unroll
 
-class TopicDataTests extends GroovyTestCase {
+@Unroll
+class EnsureSpec extends Specification {
 
-    void testArnToName() {
-        assert 'abadmin-testConformity-Report' ==
-                new TopicData('arn:aws:sns:us-east-1:179000000000:abadmin-testConformity-Report').name
-    }
+    void 'test bounded'() {
+        expect:
+        Ensure.bounded(lower, original, upper) == bound
 
-    void testNameToArn() {
-        assert 'arn:aws:sns:us-east-1:179000000000:abadmin-testConformity-Report' ==
-                new TopicData(Region.defaultRegion(), '179000000000', 'abadmin-testConformity-Report').arn
+        where:
+        lower | original | upper || bound
+        0     | 3        | 5     || 3
+        1     | 3        | 5     || 3
+        0     | -1       | 1     || 0
+        0     | 9        | 5     || 5
     }
 }

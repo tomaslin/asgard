@@ -19,18 +19,23 @@ import com.amazonaws.services.autoscaling.model.AutoScalingGroup
 import com.netflix.asgard.model.MetricId
 import com.netflix.asgard.model.ScalingPolicyData
 import com.netflix.asgard.model.ScalingPolicyData.AdjustmentType
+import spock.lang.Specification
 
-class MetaTests extends GroovyTestCase {
+class MetaSpec extends Specification {
 
-    void testToMap() {
+    void 'toMap'() {
+        when:
         MetricId metricId = new MetricId('AWS/EC2', 'RotationsPerMinute')
         Map<String, ?> expected = [
                 displayText: 'AWS/EC2 - RotationsPerMinute',
                 namespace: 'AWS/EC2',
                 metricName: 'RotationsPerMinute'
         ]
-        assert expected == Meta.toMap(metricId)
 
+        then:
+        expected == Meta.toMap(metricId)
+
+        when:
         ScalingPolicyData scalingPolicyData = new ScalingPolicyData(
                 adjustmentType: AdjustmentType.PercentChangeInCapacity, cooldown: 60, minAdjustmentStep: 3,
                 autoScalingGroupName: 'helloworld-example-v122'
@@ -40,40 +45,49 @@ class MetaTests extends GroovyTestCase {
                 autoScalingGroupName: 'helloworld-example-v122', cooldown: 60, minAdjustmentStep: 3,
                 policyName: null
         ]
-        assert expectedScalingPolicyMap == Meta.toMap(scalingPolicyData)
+
+        then:
+        expectedScalingPolicyMap == Meta.toMap(scalingPolicyData)
     }
 
-    void testPretty() {
-        assert 'Auto Scaling Group' == Meta.pretty(AutoScalingGroup)
-        assert "{MaxSize: 5, AvailabilityZones: [], LoadBalancerNames: [], Instances: [], SuspendedProcesses: [], \
+    void 'pretty'() {
+        expect:
+        'Auto Scaling Group' == Meta.pretty(AutoScalingGroup)
+        "{MaxSize: 5, AvailabilityZones: [], LoadBalancerNames: [], Instances: [], SuspendedProcesses: [], \
 EnabledMetrics: [], Tags: [], TerminationPolicies: [], }".stripIndent() == Meta.
                 pretty(new AutoScalingGroup().withMaxSize(5))
-        assert 'null' == Meta.pretty(null)
+        'null' == Meta.pretty(null)
     }
 
-    void testSplitCamelCase() {
-        assert 'lowercase' == Meta.splitCamelCase("lowercase")
-        assert 'Class' == Meta.splitCamelCase("Class")
-        assert 'My Class' == Meta.splitCamelCase("MyClass")
-        assert 'HTML' == Meta.splitCamelCase("HTML")
-        assert 'PDF Loader' == Meta.splitCamelCase("PDFLoader")
-        assert 'A String' == Meta.splitCamelCase("AString")
-        assert 'Simple XML Parser' == Meta.splitCamelCase("SimpleXMLParser")
-        assert 'GL 11 Version' == Meta.splitCamelCase("GL11Version")
+    void 'splitCamelCase'() {
+        expect:
+        Meta.splitCamelCase(input) == output
 
-        assert 'dev Phase' == Meta.splitCamelCase("devPhase")
-        assert 'hardware' == Meta.splitCamelCase("hardware")
-        assert 'partners' == Meta.splitCamelCase("partners")
-        assert 'revision' == Meta.splitCamelCase("revision")
-        assert 'used By' == Meta.splitCamelCase("usedBy")
-        assert 'red Black Swap' == Meta.splitCamelCase("redBlackSwap")
+        where:
+        input             || output
+        "lowercase"       || 'lowercase'
+        "Class"           || 'Class'
+        "MyClass"         || 'My Class'
+        "HTML"            || 'HTML'
+        "PDFLoader"       || 'PDF Loader'
+        "AString"         || 'A String'
+        "SimpleXMLParser" || 'Simple XML Parser'
+        "GL11Version"     || 'GL 11 Version'
+        "devPhase"        || 'dev Phase'
+        "hardware"        || 'hardware'
+        "partners"        || 'partners'
+        "revision"        || 'revision'
+        "usedBy"          || 'used By'
+        "redBlackSwap"    || 'red Black Swap'
     }
 
-    void testCopy() {
+    void 'copy'() {
+        given:
         AutoScalingGroup original = new AutoScalingGroup().withAutoScalingGroupName('hello')
         AutoScalingGroup copy = Meta.copy(original)
 
-        assert original.autoScalingGroupName == copy.autoScalingGroupName
-        assert !original.is(copy)
+        expect:
+        original.autoScalingGroupName == copy.autoScalingGroupName
+        !original.is(copy)
     }
 }

@@ -16,39 +16,42 @@
 package com.netflix.asgard
 
 import com.netflix.asgard.mock.Mocks
+import spock.lang.Specification
 
-class LaunchTemplateServiceTests extends GroovyTestCase {
+class LaunchTemplateServiceSecurityGroupSpec extends Specification {
 
-    void setUp() {
+    void setup() {
         Mocks.createDynamicMethods()
     }
 
-    void testIncludeDefaultSecurityGroups() {
+    void 'include default security groups'() {
+        given:
         LaunchTemplateService launchTemplateService = Mocks.launchTemplateService()
         List<String> original = ["account_batch", "abcache"]
         Collection<String> result = launchTemplateService.includeDefaultSecurityGroups(original)
 
-        assert !original.contains("nf-infrastructure")
-        assert !original.contains("nf-datacenter")
-        assert result.contains("nf-infrastructure")
-        assert result.contains("nf-datacenter")
-        assert result.contains("account_batch")
-        assert result.contains("abcache")
-
-        assert 4 == result.size()
+        expect:
+        !original.contains("nf-infrastructure")
+        !original.contains("nf-datacenter")
+        result.contains("nf-infrastructure")
+        result.contains("nf-datacenter")
+        result.contains("account_batch")
+        result.contains("abcache")
+        result.size() == 4
     }
 
-    void testIncludeDefaultSecurityGroupsWithoutDuplication() {
+    void 'include default security groups without duplication'() {
+        given:
         LaunchTemplateService launchTemplateService = Mocks.launchTemplateService()
         List<String> original = ["account_batch", "nf-infrastructure"]
         Collection<String> result = launchTemplateService.includeDefaultSecurityGroups(original)
 
-        assert original.contains("nf-infrastructure")
-        assert !original.contains("nf-datacenter")
-        assert result.contains("nf-infrastructure")
-        assert result.contains("nf-datacenter")
-        assert result.contains("account_batch")
-
-        assert 3 == result.size()
+        expect:
+        original.contains("nf-infrastructure")
+        !original.contains("nf-datacenter")
+        result.contains("nf-infrastructure")
+        result.contains("nf-datacenter")
+        result.contains("account_batch")
+        result.size() == 3
     }
 }

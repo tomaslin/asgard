@@ -18,21 +18,24 @@ package com.netflix.asgard.model
 import com.netflix.asgard.Region
 import com.netflix.asgard.Time
 import org.joda.time.DateTime
+import spock.lang.Specification
 
-class SimpleQueueTests extends GroovyTestCase {
+class SimpleQueueSpec extends Specification {
 
-    void testUrlToName() {
-        assert 'cloudBatchTestQueue1' ==
-                new SimpleQueue('https://sqs.us-east-1.amazonaws.com/179000000000/cloudBatchTestQueue1').name
+    void 'url to name'() {
+        expect:
+        'cloudBatchTestQueue1' ==
+        new SimpleQueue('https://sqs.us-east-1.amazonaws.com/179000000000/cloudBatchTestQueue1').name
     }
 
-    void testNameToUrl() {
-        assert 'https://sqs.us-east-1.amazonaws.com/179000000000/cloudBatchTestQueue1' ==
-                new SimpleQueue(Region.defaultRegion(), '179000000000', 'cloudBatchTestQueue1').url
+    void 'name to url'() {
+        expect:
+        'https://sqs.us-east-1.amazonaws.com/179000000000/cloudBatchTestQueue1' ==
+        new SimpleQueue(Region.defaultRegion(), '179000000000', 'cloudBatchTestQueue1').url
     }
 
-    void testHumanReadableAttributes() {
-
+    void 'human readable attributes'() {
+        given:
         String timestamp = '1234566789'
 
         String url = 'https://sqs.us-east-1.amazonaws.com/179000000000/com_netflix_log4n_test_queue_error'
@@ -61,6 +64,7 @@ class SimpleQueueTests extends GroovyTestCase {
                 'Created Timestamp': Time.format(new DateTime(Long.parseLong(timestamp) * 1000)),
                 'Last Modified Timestamp': Time.format(new DateTime(Long.parseLong(timestamp) * 1000))]
 
-        assert expectedResult == actualHumanReadableMap
+        expect:
+        expectedResult == actualHumanReadableMap
     }
 }

@@ -17,32 +17,38 @@ package com.netflix.asgard
 
 import com.amazonaws.services.autoscaling.model.Instance
 import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription
+import spock.lang.Specification
 
-class AsgInstanceTests extends GroovyTestCase {
+class AsgInstanceSpec extends Specification {
 
-    void testCopy() {
+    void 'copy'() {
 
+        given:
         new MonkeyPatcherService().createDynamicMethods()
 
         Instance original = new Instance().withInstanceId("i-test").withAvailabilityZone("us-east-1d").withLifecycleState("running")
 
         Instance copy = original.copy()
 
-        assert !copy.is(original)
-        assert copy == original
+        expect:
+         !copy.is(original)
+         copy == original
 
+        when:
         copy.setAvailabilityZone "us-east-1c"
-        assert copy.getAvailabilityZone() == "us-east-1c"
-        assert original.getAvailabilityZone() == "us-east-1d"
+
+        then:
+        copy.getAvailabilityZone() == "us-east-1c"
+        original.getAvailabilityZone() == "us-east-1d"
+
+        when:
         copy.metaClass.loadBalancers = [new LoadBalancerDescription()]
+        original.loadBalancers
 
-        boolean missingPropExceptionThrown = false
-        try { original.loadBalancers } catch (MissingPropertyException ignored) { missingPropExceptionThrown = true }
-        assert missingPropExceptionThrown
-
-        assert 1 == copy.loadBalancers.size()
-
-        assert original.getInstanceId() == copy.getInstanceId()
-        assert original.getLifecycleState() == copy.getLifecycleState()
+        then:
+        thrown MissingPropertyException
+        1 == copy.loadBalancers.size()
+        original.getInstanceId() == copy.getInstanceId()
+        original.getLifecycleState() == copy.getLifecycleState()
     }
 }

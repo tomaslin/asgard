@@ -15,7 +15,9 @@
  */
 package com.netflix.asgard.model
 
-class GroupedInstanceStateTests extends GroovyTestCase {
+import spock.lang.Specification
+
+class GroupedInstanceStateSpec extends Specification {
 
     private GroupedInstanceState makeOne() {
         new GroupedInstanceState([
@@ -26,19 +28,25 @@ class GroupedInstanceStateTests extends GroovyTestCase {
                 loadBalancers: ['hello', 'goodbye']])
     }
 
-    void testEqualsAndHashCode() {
+    void 'test equals and hashcode'() {
+        given:
         GroupedInstanceState instanceState1 = makeOne()
         GroupedInstanceState instanceState2 = makeOne()
-        assert instanceState1 == instanceState2
-        assert instanceState2 == instanceState1
+
+        expect:
+        instanceState1 == instanceState2
+        instanceState2 == instanceState1
     }
 
-    void testHashCode() {
+    void 'test hashcode'() {
+        given:
         GroupedInstanceState instanceState1 = makeOne()
         GroupedInstanceState instanceState2 = makeOne()
         Map<GroupedInstanceState, Integer> statesToCounts = [:]
         statesToCounts.put(instanceState1, 9)
-        assert statesToCounts.containsKey(instanceState2)
-        assert 9 == statesToCounts.get(instanceState2)
+
+        expect:
+        statesToCounts.containsKey(instanceState2)
+        9 == statesToCounts.get(instanceState2)
     }
 }
