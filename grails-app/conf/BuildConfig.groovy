@@ -51,7 +51,7 @@ grails.project.fork = [
     // test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
     // configure settings for the run-app JVM
     run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
-    
+
     // configure settings for the run-war JVM
     war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
     // configure settings for the Console UI JVM
@@ -175,11 +175,11 @@ grails.project.dependency.resolution = {
         compile ':shiro:1.1.4'
         compile ":standalone:1.1.1"
 
-        runtime ':hibernate:3.6.10.2'
+        runtime ':hibernate:3.6.10.6'
         runtime ":cors:1.0.4"
 
         test ':code-coverage:1.2.6'
 
-        build ":tomcat:7.0.42"
+        build ":tomcat:7.0.47"
     }
 }
