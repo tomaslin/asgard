@@ -287,15 +287,28 @@ ${lastGroup.loadBalancerNames}"""
     }
 
     def deploy(DeployCommand cmd) {
+        UserContext userContext = UserContext.of(request)
         if (cmd.hasErrors()) {
-            chain(action: 'prepareDeployment', model: [cmd:cmd], params: params)
+            flash.message = "Cluster '${cmd.clusterName}' is invalid."
+            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params)
+            return
+        }
+        Cluster cluster = awsAutoScalingService.getCluster(userContext, cmd.clusterName)
+        if (cluster.size() != 1) {
+            flash.message = "Cluster '${cmd.clusterName}' should only have one ASG to enable automatic deployment."
+            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params)
+            return
+        }
+        AutoScalingGroupData lastGroup = cluster.last()
+        if (lastGroup.seemsDisabled()) {
+            flash.message = "ASG in cluster '${cmd.clusterName}' should be receiving traffic to enable automatic deployment."
+            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params)
             return
         }
         DeploymentWorkflowOptions deploymentOptions = new DeploymentWorkflowOptions()
         bindData(deploymentOptions, params)
         deploymentOptions.clusterName = cmd.clusterName
 
-        UserContext userContext = UserContext.of(request)
         String appName = Relationships.appNameFromGroupName(cmd.clusterName)
         String email = applicationService.getEmailFromApp(userContext, appName)
         if (params.createAsgOnly) {
