@@ -215,18 +215,18 @@ ${lastGroup.loadBalancerNames}"""
         String email = applicationService.getEmailFromApp(userContext, appName)
         attributes?.putAll([
                 deploymentWorkflowOptions: new DeploymentWorkflowOptions(
-                        notificationDestination: params.notificationDestination ?: email,
-                        delayDurationMinutes: params.delayDurationMinutes ?: 0,
+                        notificationDestination: params.int('notificationDestination') ?: email,
+                        delayDurationMinutes: params.int('delayDurationMinutes') ?: 0,
                         doCanary: Boolean.parseBoolean(params.doCanary),
-                        canaryCapacity: params.canaryCount ?: 1,
-                        canaryStartUpTimeoutMinutes: params.canaryStartUpTimeoutMinutes ?: 30,
-                        canaryAssessmentDurationMinutes: params.canaryAssessmentDurationMinutes ?: 60,
+                        canaryCapacity: params.int('canaryCount') ?: 1,
+                        canaryStartUpTimeoutMinutes: params.int('canaryStartUpTimeoutMinutes') ?: 30,
+                        canaryAssessmentDurationMinutes: params.int('canaryAssessmentDurationMinutes') ?: 60,
                         scaleUp: ProceedPreference.parse(params.scaleUp),
-                        desiredCapacityStartUpTimeoutMinutes: params.desiredCapacityStartUpTimeoutMinutes ?: 40,
-                        desiredCapacityAssessmentDurationMinutes: params.
-                                desiredCapacityAssessmentDurationMinutes ?: 120,
+                        desiredCapacityStartUpTimeoutMinutes: params.int('desiredCapacityStartUpTimeoutMinutes') ?: 40,
+                        desiredCapacityAssessmentDurationMinutes: params.int(
+                                'desiredCapacityAssessmentDurationMinutes') ?: 120,
                         disablePreviousAsg: ProceedPreference.parse(params.disablePreviousAsg),
-                        fullTrafficAssessmentDurationMinutes: params.fullTrafficAssessmentDurationMinutes ?: 240,
+                        fullTrafficAssessmentDurationMinutes: params.int('fullTrafficAssessmentDurationMinutes') ?: 240,
                         deletePreviousAsg: ProceedPreference.parse(params.deletePreviousAsg)
                 )
         ])
@@ -296,7 +296,7 @@ ${lastGroup.loadBalancerNames}"""
         Cluster cluster = awsAutoScalingService.getCluster(userContext, cmd.clusterName)
         if (cluster.size() != 1) {
             flash.message = "Cluster '${cmd.clusterName}' should only have one ASG to enable automatic deployment."
-            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params)
+            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params, id: cmd.clusterName)
             return
         }
         AutoScalingGroupData group = cluster.last()
@@ -305,7 +305,7 @@ ${lastGroup.loadBalancerNames}"""
              group.isAddingToLoadBalancerSuspended()
         ) {
             flash.message = "ASG in cluster '${cmd.clusterName}' should be receiving traffic to enable automatic deployment."
-            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params)
+            chain(action: 'prepareDeployment', model: [cmd: cmd], params: params, id: cmd.clusterName)
             return
         }
         DeploymentWorkflowOptions deploymentOptions = new DeploymentWorkflowOptions()
