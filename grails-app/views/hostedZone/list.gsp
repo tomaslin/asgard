@@ -1,6 +1,6 @@
 <%--
 
-    Copyright 2012 Netflix, Inc.
+    Copyright 2013 Netflix, Inc.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,35 +19,41 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="main"/>
-  <title>Source Security Groups</title>
+  <title>Route53 Hosted Zones</title>
 </head>
 <body>
 <div class="body">
-  <h1>Source Security Groups in ${region.description}</h1>
+  <h1>Route53 Hosted Zones</h1>
   <g:if test="${flash.message}">
     <div class="message">${flash.message}</div>
   </g:if>
   <g:form method="post">
     <div class="list">
-      <div class="buttons"></div>
+      <div class="buttons">
+        <g:link class="create" action="create">Create New Hosted Zone</g:link>
+      </div>
       <table class="sortable">
         <thead>
         <tr>
+          <th>Hosted Zone ID</th>
           <th>Name</th>
-          <th>Owner</th>
+          <th>Resource Record<br/>Set Count</th>
+          <th>Comment</th>
         </tr>
         </thead>
         <tbody>
-        <g:each var="grp" in="${sourceSecurityGroups}" status="i">
+        <g:each var="hostedZone" in="${hostedZones}" status="i">
           <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
-            <td>${grp.groupName}</td>
-            <td>${grp.ownerAlias}</td>
+            <td><g:linkObject type="hostedZone" name="${hostedZone.id}"/></td>
+            <td>${hostedZone.name}</td>
+            <td>${hostedZone.resourceRecordSetCount}</td>
+            <td>${hostedZone.config.comment}</td>
           </tr>
         </g:each>
         </tbody>
       </table>
+      <footer/>
     </div>
-    <footer/>
   </g:form>
 </div>
 </body>

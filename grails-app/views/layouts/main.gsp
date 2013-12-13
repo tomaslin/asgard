@@ -78,7 +78,7 @@
         </shiro:isNotLoggedIn>
       </g:if>
       <div class="search" title="Find entities by name">
-        <form action="/search" method="GET" class="allowEnterKeySubmit">
+        <form action="/search" method="GET" class="allowEnterKey">
           %{--<input type="search" results="10" autosave="asgard${env}globalsearch" name="q" placeholder="Global search by names" value="${params.q}">--}%
         </form>
       </div>
@@ -109,7 +109,13 @@
          <li class="menuButton"><g:link class="alarm" controller="alarm" action="list">CloudWatch Alarms</g:link></li>
        </ul>
      </li>
-     <li class="menuButton"><g:link class="loadBalancers" controller="loadBalancer" action="list">ELB</g:link></li>
+     <li class="menuButton">
+       <g:link class="loadBalancers" controller="loadBalancer" action="list">ELB</g:link>
+       <ul>
+         <li class="menuButton"><g:link class="loadBalancers" controller="loadBalancer" action="list">Elastic Load Balancers</g:link></li>
+         <li class="menuButton"><g:link class="hostedZones" controller="hostedZone" action="list">Route53 Hosted Zones</g:link></li>
+       </ul>
+     </li>
      <li class="menuButton">
          <g:link class="instances" controller="instance" action="${discoveryExists ? 'apps' : 'list'}">EC2</g:link>
          <ul>
